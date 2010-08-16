@@ -1,0 +1,26 @@
+clr.AddReference("System.Windows.Forms")
+from System import Random, Math
+from System.Windows.Forms import Clipboard
+from System.Diagnostics import Debug
+
+class Putty(BaseIronPythonCommand):
+    def __init__(self):
+        self.r = Random()
+        self.letters = "abcdefghijklmnopqrstuvwxyz"
+
+    @property
+    def Name(self):
+        return "random-text"
+
+    def _getWord(self, wordsize):
+        return "".join(self.letters[self.r.Next(0,len(self.letters))] 
+                       for letter in range(self.r.Next(wordsize)))
+
+    def Execute(self, args):
+        try:
+            # yes, args comes with a -, go figure...
+            i = Math.Abs(int(args))
+        except:
+            i = 10
+        phrase = " ".join(self._getWord(10) for word in range(self.r.Next(0,i)))
+        Clipboard.SetText(phrase)

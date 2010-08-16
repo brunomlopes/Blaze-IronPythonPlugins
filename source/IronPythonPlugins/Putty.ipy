@@ -1,0 +1,28 @@
+from Microsoft.Win32 import Registry
+from System.Diagnostics import Debug, Process
+
+class Putty(BaseIronPythonCommand):
+    def __init__(self):
+        sessionsKey = Registry.CurrentUser.OpenSubKey(r"Software\SimonTatham\PuTTY\Sessions")
+        self.sessionNames = sessionsKey.GetSubKeyNames()
+        for name in self.sessionNames:
+            Debug.Write("Got %s" % name)
+
+    @property
+    def Name(self):
+        return "putty"
+
+    def AutoComplete(self, str):
+        if str.strip() == "": return "putty "
+        result = filter(lambda x: x.startswith(str), self.sessionNames)
+        
+        if len(result) > 0: return "putty "+result[0]
+
+        result = filter(lambda x: str in x, self.sessionNames)
+        if len(result) > 0: return "putty "+result[0]
+
+        else: return "putty "+str
+
+    def Execute(self, args):
+        Debug.Write("execute: "+args)
+        Process.Start("putty.exe", "-load "+ args)
