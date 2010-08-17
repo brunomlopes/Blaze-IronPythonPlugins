@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Timers;
+using System.Xml.Serialization;
 using SystemCore.CommonTypes;
 using SystemCore.SystemAbstraction.WindowManagement;
 using Configurator;
@@ -21,7 +23,6 @@ namespace IronPythonPlugins
     {
         private ScriptEngine _engine;
         private Dictionary<string, IList<Command>> _pythonCommands;
-        private string _ironpythonPluginsFolder;
         private List<FileSystemWatcher> _pluginFolderWatchers;
 
         private readonly object _syncRoot;
@@ -31,6 +32,7 @@ namespace IronPythonPlugins
         public IronPythonHostPlugin()
             : base("Host for IronPython plugins")
         {
+            _configurable = true;
             _pathsToReload = new Queue<string>();
             _reloadTimer = new Timer();
             _syncRoot = new object();
@@ -69,7 +71,7 @@ namespace IronPythonPlugins
                 Debug.Write(string.Format("Error with file {1}: {0}",
                                             e, path));
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 Debug.Write(string.Format("File {0} was locked for read. Will retry again.", path));
                 lock (_syncRoot)
@@ -87,15 +89,50 @@ namespace IronPythonPlugins
                 }
             }
         }
+        public override void Configure()
+        {
+            _configuration = new Configuration(_configuration).ShowConfigurationDialog();
+            SaveSettings();
+            SetupCommands();
+        }
+
+        private const string _Name = "IronPythonPlugins";
+
+        private Configuration.ConfigurationObject _configuration = new Configuration.ConfigurationObject();
+        private readonly string _configurationFileName = CommonInfo.UserFolder + _Name + ".xml";
+
+        private void SaveSettings()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Configuration.ConfigurationObject));
+            using (TextWriter writer = new StreamWriter(_configurationFileName, false, Encoding.Default))
+            {
+                serializer.Serialize(writer, _configuration);
+            }
+        }
+
+        private void LoadSettings()
+        {
+            _configuration = new Configuration.ConfigurationObject();
+            if (File.Exists(_configurationFileName))
+            {
+                var serializer = new XmlSerializer(typeof(Configuration.ConfigurationObject));
+                _configuration = (Configuration.ConfigurationObject)serializer.Deserialize(new StreamReader(_configurationFileName, Encoding.Default));
+            }
+        }
 
         protected override void SetupCommands()
         {
+            LoadSettings();
+
             _engine = Python.CreateEngine();
             _pythonCommands = new Dictionary<string, IList<Command>>();
             _pluginFolderWatchers = new List<FileSystemWatcher>();
 
-            foreach (var folder in new[] { Path.Combine(CommonInfo.PluginsFolder, "IronPythonPlugins")})
-            {    
+            foreach (var folder in
+                new[] {Path.Combine(CommonInfo.PluginsFolder, "IronPythonPlugins")}
+                    .Concat(_configuration.IronPythonScriptPaths))
+            {
+                Debug.Write(string.Format("Loading scripts from {0}", folder));
                 SetupPythonCommands(folder);
 
                 var pluginFolderWatcher = new FileSystemWatcher(folder, "*.ipy");
@@ -103,15 +140,15 @@ namespace IronPythonPlugins
                 pluginFolderWatcher.Changed += _pluginFolderWatcher_Changed;
                 pluginFolderWatcher.Created += _pluginFolderWatcher_Changed;
                 pluginFolderWatcher.Deleted += (sender, e) =>
-                                                    {
-                                                        lock (_syncRoot)
-                                                        {
-                                                            RemoveCommandsForFile(e.FullPath);
-                                                        }
-                                                    };
+                                                   {
+                                                       lock (_syncRoot)
+                                                       {
+                                                           RemoveCommandsForFile(e.FullPath);
+                                                       }
+                                                   };
                 pluginFolderWatcher.EnableRaisingEvents = true;
                 _pluginFolderWatchers.Add(pluginFolderWatcher);
-                }
+            }
         }
 
         void _pluginFolderWatcher_Changed(object sender, FileSystemEventArgs e)
