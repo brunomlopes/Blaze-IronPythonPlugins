@@ -19,6 +19,19 @@ From the downloads tab you can find:
 
 Try it! 
 
+Creating a plugin
+-----------------
+
+Just create a .ipy file in *plugins/IronPythonPlugins* like this:
+
+    class NewPlugin(BaseIronPythonCommand):
+        @property
+        def Name(self):
+            return "name for the plugin, used when calling it in blaze"
+    
+        def Execute(self, args):
+            pass # args is what comes after the name when the user launches the plugin
+
 Examples
 --------
 
@@ -51,7 +64,9 @@ Here's a plugin that picks up the current path from the topmost explorer window 
             if path != None:
                 Clipboard.SetText(path)
 
+For a sample with autocomplete, check out the [putty plugin][4]
 
 [1]: http://blaze-wins.sourceforge.net/
 [2]: http://github.com/brunomlopes/Blaze-IronPythonPlugins/blob/master/source/IronPythonPlugins/Sample.ipy
 [3]: http://github.com/brunomlopes/Blaze-IronPythonPlugins/raw/master/lib/blaze/Docs/ContextLib.chm
+[4]: http://github.com/brunomlopes/Blaze-IronPythonPlugins/blob/master/source/IronPythonPlugins/Putty.ipy
