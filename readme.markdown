@@ -24,32 +24,32 @@ Examples
 
 Look into [Sample.ipy][2] for the simplest of plugins:
 
-import System
-clr.AddReference("System.Windows.Forms")
-
-class MustScream(BaseIronPythonCommand):
-    @property
-    def Name(self):
-        return "MustScream"
-
-    def Execute(self, args):
-	System.Windows.Forms.MessageBox.Show(args, "Shout!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning)
+    import System
+    clr.AddReference("System.Windows.Forms")
+    
+    class MustScream(BaseIronPythonCommand):
+        @property
+        def Name(self):
+            return "MustScream"
+    
+        def Execute(self, args):
+            System.Windows.Forms.MessageBox.Show(args, "Shout!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning)
 
 
 Here's a plugin that picks up the current path from the topmost explorer window and copies it into the clipboard:
 
-clr.AddReference("System.Windows.Forms")
-from System.Windows.Forms import Clipboard
+    clr.AddReference("System.Windows.Forms")
+    from System.Windows.Forms import Clipboard
 
-class CopyPathToClipboard(BaseIronPythonCommand):
-    @property
-    def Name(self):
-        return "path to clipboard"
-
-    def Execute(self, args):
-        path = UserContext.GetExplorerPath(True)
-        if path != None:
-            Clipboard.SetText(path)
+    class CopyPathToClipboard(BaseIronPythonCommand):
+        @property
+        def Name(self):
+            return "path to clipboard"
+    
+        def Execute(self, args):
+            path = UserContext.GetExplorerPath(True)
+            if path != None:
+                Clipboard.SetText(path)
 
 
 [1]: http://blaze-wins.sourceforge.net/
