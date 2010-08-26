@@ -126,7 +126,8 @@ namespace IronPythonPlugins
 
             foreach (var folder in
                 new[] {Path.Combine(CommonInfo.PluginsFolder, "IronPythonPlugins")}
-                    .Concat(_configuration.IronPythonScriptPaths))
+                    .Concat(_configuration.IronPythonScriptPaths)
+                    .Where(Directory.Exists))
             {
                 Debug.Write(string.Format("Loading scripts from {0}", folder));
                 SetupPythonCommands(folder);
