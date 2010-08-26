@@ -46,7 +46,29 @@ namespace IronPythonPlugins
 
         private void Add_Click(object sender, EventArgs e)
         {
-            Paths.Items.Add(PathToAdd.Text);
+            var newPath = PathToAdd.Text;
+            if (string.IsNullOrEmpty(newPath))
+            {
+                MessageBox.Show("Please add a directory (press the  b' button to browse to it).", "Error", MessageBoxButtons.OK);
+            }
+            else if(!System.IO.Directory.Exists(newPath))
+            {
+                if (System.IO.File.Exists(newPath))
+                {
+                    MessageBox.Show(string.Format("Path '{0}' is a file. Please add a directory.", newPath), "Error",
+                                    MessageBoxButtons.OK);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        string.Format("Path '{0}' doesn't exist. Please browse to an existing path", newPath), "Error",
+                        MessageBoxButtons.OK);
+                }
+            }
+            else
+            {
+                Paths.Items.Add(newPath);
+            }
         }
 
         private void Paths_Click(object sender, EventArgs e)

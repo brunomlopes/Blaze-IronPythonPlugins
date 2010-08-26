@@ -81,12 +81,8 @@ namespace IronPythonPlugins
             }
             catch (Exception e)
             {
-                Debug.Write(string.Format("Error with file {1}: {0}",
+                Debug.Write(string.Format("Error with file {1}: {0}.\nWill not reload it again",
                                             e, path));
-                lock (_syncRoot)
-                {
-                    _pathsToReload.Enqueue(path);
-                }
             }
         }
         public override void Configure()
