@@ -34,6 +34,6 @@ namespace IronPythonPlugins
                    split[0].Trim().ToLowerInvariant() == Name.ToLowerInvariant();
         }
 
-        public abstract void Execute(string command);
+        public abstract string Execute(string command);
     }
 }

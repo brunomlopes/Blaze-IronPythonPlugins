@@ -26,7 +26,19 @@ namespace IronPythonPlugins
                                    {
                                        try
                                        {
-                                           plugin.Execute(parameters);
+                                           var result = plugin.Execute(parameters);
+                                           if(!string.IsNullOrEmpty(result) && !string.IsNullOrEmpty(result.Trim()))
+                                           {
+                                               var command = result.Split(new[] {' '}, 2);
+                                               if(command.Length == 1)
+                                               {
+                                                   Process.Start(command[0]);
+                                               }
+                                               else
+                                               {
+                                                   Process.Start(command[0], command[1]);
+                                               }
+                                           }
                                        }
                                        catch (Exception e)
                                        {

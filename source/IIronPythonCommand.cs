@@ -4,7 +4,7 @@ namespace IronPythonPlugins
 {
     public interface IIronPythonCommand
     {
-        void Execute(string command);
+        string Execute(string command);
         string GetName(string parameters);
         string GetDescription(string parameters);
         string AutoComplete(string parameters);
