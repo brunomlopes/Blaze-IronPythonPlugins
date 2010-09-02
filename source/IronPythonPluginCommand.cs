@@ -8,7 +8,7 @@ namespace IronPythonPlugins
     class IronPythonPluginCommand : Command
     {
         public IronPythonPluginCommand(FileInfo pythonFile, IIronPythonCommand plugin)
-            : base(plugin.Name, "Python script " + plugin.Name)
+            : base(plugin.GetName(), "Python script " + plugin.GetName())
         {
             SetIsOwnerDelegate(plugin.IsOwner);
             SetNameDelegate(plugin.GetName);
@@ -16,7 +16,7 @@ namespace IronPythonPlugins
                                        {
                                            var description = plugin.GetDescription(parameters);
                                            return string.IsNullOrEmpty(description)
-                                                      ? pythonFile.FullName + ":" + plugin.Name
+                                                      ? pythonFile.FullName + ":" + plugin.GetName()
                                                       : description;
                                        });
             SetIconDelegate(str => Resources.python_clear.ToBitmap());

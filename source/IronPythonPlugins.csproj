@@ -105,6 +105,7 @@
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
     <Compile Include="IIronPythonCommand.cs" />
+    <Compile Include="IronPythonCommandFile.cs" />
     <Compile Include="IronPythonHostPlugin.cs" />
     <Compile Include="IronPythonPluginCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,6 +126,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="IronPythonPlugins\Edit.ipy" />
     <None Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>

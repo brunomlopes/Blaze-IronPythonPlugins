@@ -22,7 +22,7 @@ namespace IronPythonPlugins
     public class IronPythonHostPlugin : InterpreterPlugin
     {
         private ScriptEngine _engine;
-        private Dictionary<string, IList<Command>> _pythonCommands;
+        private Dictionary<string, IronPythonCommandFile> _pythonCommands;
         private List<FileSystemWatcher> _pluginFolderWatchers;
 
         private readonly object _syncRoot;
@@ -121,7 +121,7 @@ namespace IronPythonPlugins
             LoadSettings();
 
             _engine = Python.CreateEngine();
-            _pythonCommands = new Dictionary<string, IList<Command>>();
+            _pythonCommands = new Dictionary<string, IronPythonCommandFile>();
             _pluginFolderWatchers = new List<FileSystemWatcher>();
 
             foreach (var folder in
@@ -192,39 +192,10 @@ namespace IronPythonPlugins
 
         private void LoadPythonCommandsForFile(string pythonFile)
         {
-            ScriptSource script = _engine.CreateScriptSourceFromFile(pythonFile);
-            CompiledCode code = script.Compile();
-            ScriptScope scope = _engine.CreateScope();
-
-            scope.SetVariable("IIronPythonCommand", ClrModule.GetPythonType(typeof(IIronPythonCommand)));
-            scope.SetVariable("BaseIronPythonCommand", ClrModule.GetPythonType(typeof(BaseIronPythonCommand)));
-            scope.SetVariable("UserContext", UserContext.Instance);
-            scope.SetVariable("WindowUtility", WindowUtility.Instance);
-            scope.SetVariable("clr", _engine.GetClrModule());
-            code.Execute(scope);
-
-            _pythonCommands[pythonFile] = new List<Command>();
-
-
-            var pluginClasses = scope.GetItems()
-                .Where(kvp => kvp.Value is IronPython.Runtime.Types.PythonType)
-                .Where(
-                    kvp =>
-                    typeof(IIronPythonCommand).IsAssignableFrom(((IronPython.Runtime.Types.PythonType)kvp.Value).__clrtype__()))
-                .Where(kvp => kvp.Key != "BaseIronPythonCommand" && kvp.Key != "IIronPythonCommand")
-
-                .Select(kvp => kvp.Value);
-
-
-            foreach (var p in pluginClasses)
-            {
-                var plugin = (IIronPythonCommand)_engine.Operations.Invoke(p, new object[] { });
-
-                var command = new IronPythonPluginCommand(new FileInfo(pythonFile), plugin);
-
-                _commands.Add(command);
-                _pythonCommands[pythonFile].Add(command);
-            }
+            var localCommands = new IronPythonCommandFile(_engine, new FileInfo(pythonFile));
+            
+            Commands.AddRange(localCommands);
+            _pythonCommands[pythonFile] = localCommands;
         }
 
         protected override string GetAssembyName()
