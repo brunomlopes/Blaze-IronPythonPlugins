@@ -3,20 +3,12 @@ from Microsoft.Win32 import Registry
 from System.IO import Path
 
 class EditWithNotepad2(BaseIronPythonCommand):
-    @property
-    def Name(self):
-        return "edit with notepad2"
-
     def Execute(self, args):
         for path in UserContext.GetExplorerSelectedItems(True):
             Debug.Write("edit "+path)
             Process.Start("notepad2", path)
 
 class OpenInPowershell(BaseIronPythonCommand):
-    @property
-    def Name(self):
-        return "open in powershell"
-    
     def Execute(self, args):
         path = UserContext.GetExplorerPath(True)
         info = ProcessStartInfo("powershell")
@@ -24,10 +16,6 @@ class OpenInPowershell(BaseIronPythonCommand):
         Process.Start(info)
 
 class OpenWithGitExtensions(BaseIronPythonCommand):
-    @property
-    def Name(self):
-        return "open with git extensions"
-    
     def Execute(self, args):
         installDir = Registry.CurrentUser.OpenSubKey(r"Software").OpenSubKey("GitExtensions").OpenSubKey("GitExtensions").OpenSubKey("1.0.0.0").GetValue("InstallDir")
         path = UserContext.GetExplorerPath(True)
@@ -36,10 +24,6 @@ class OpenWithGitExtensions(BaseIronPythonCommand):
 
 
 class OpenWithReflector(BaseIronPythonCommand):
-    @property
-    def Name(self):
-        return "open with reflector"
-
     def Execute(self, args):
         for path in UserContext.GetExplorerSelectedItems(True):
             Debug.Write("edit "+path)

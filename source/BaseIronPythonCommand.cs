@@ -17,7 +17,7 @@ namespace IronPythonPlugins
             return _name;
         }
 
-        public virtual string GetName(string parameters)
+        public virtual string GetNameForParameters(string parameters)
         {
             return GetName();
         }

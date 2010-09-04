@@ -3,14 +3,13 @@ from System import Random, Math
 from System.Windows.Forms import Clipboard
 from System.Diagnostics import Debug
 
-class Putty(BaseIronPythonCommand):
+class RandomTest(BaseIronPythonCommand):
     def __init__(self):
         self.r = Random()
         self.letters = "abcdefghijklmnopqrstuvwxyz"
 
-    @property
-    def Name(self):
-        return "random-text"
+    def GetName(self):
+        return "RandomText"
 
     def _getWord(self, wordsize):
         return "".join(self.letters[self.r.Next(0,len(self.letters))] 

@@ -11,7 +11,7 @@ namespace IronPythonPlugins
             : base(plugin.GetName(), "Python script " + plugin.GetName())
         {
             SetIsOwnerDelegate(plugin.IsOwner);
-            SetNameDelegate(plugin.GetName);
+            SetNameDelegate(plugin.GetNameForParameters);
             SetDescriptionDelegate(parameters =>
                                        {
                                            var description = plugin.GetDescription(parameters);

@@ -6,7 +6,7 @@ namespace IronPythonPlugins
     {
         string Execute(string command);
         string GetName();
-        string GetName(string parameters);
+        string GetNameForParameters(string parameters);
         string GetDescription(string parameters);
         string AutoComplete(string parameters);
         bool IsOwner(string parameters);

@@ -8,10 +8,6 @@ class Putty(BaseIronPythonCommand):
         for name in self.sessionNames:
             Debug.Write("Got %s" % name)
 
-    @property
-    def Name(self):
-        return "putty"
-
     def AutoComplete(self, str):
         if str.strip() == "": return "putty "
         result = filter(lambda x: x.startswith(str), self.sessionNames)

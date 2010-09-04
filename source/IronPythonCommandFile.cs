@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,12 +71,18 @@ namespace IronPythonPlugins
                 {
                     // retrieving the class name from the python time is a bit trickier without access to the engine
                     // so we pass this here
-                    ((BaseIronPythonCommand) plugin).SetDefaultName(nameAndClass.Key);
+                    var commandName = CamelToSpaced(nameAndClass.Key);
+                    ((BaseIronPythonCommand) plugin).SetDefaultName(commandName);
                 }
                 var command = new IronPythonPluginCommand(_pythonFile, plugin);
 
                 _localCommands.Add(command);
             }
+        }
+
+        private string CamelToSpaced(string name)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(name, "(?<l>[A-Z])", " ${l}").Trim();
         }
 
         public IEnumerator<Command> GetEnumerator()
