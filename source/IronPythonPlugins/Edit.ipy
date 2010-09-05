@@ -2,29 +2,25 @@ from System.Diagnostics import Debug, Process, ProcessStartInfo
 from Microsoft.Win32 import Registry
 from System.IO import Path
 
-class EditWithNotepad2(BaseIronPythonCommand):
-    def Execute(self, args):
-        for path in UserContext.GetExplorerSelectedItems(True):
-            Debug.Write("edit "+path)
-            Process.Start("notepad2", path)
+def EditWithNotepad2(args):
+    for path in UserContext.GetExplorerSelectedItems(True):
+        Debug.Write("edit "+path)
+        Process.Start("notepad2", path)
 
-class OpenInPowershell(BaseIronPythonCommand):
-    def Execute(self, args):
-        path = UserContext.GetExplorerPath(True)
-        info = ProcessStartInfo("powershell")
-        info.WorkingDirectory = path
-        Process.Start(info)
+def OpenInPowershell(args):
+    path = UserContext.GetExplorerPath(True)
+    info = ProcessStartInfo("powershell")
+    info.WorkingDirectory = path
+    Process.Start(info)
 
-class OpenWithGitExtensions(BaseIronPythonCommand):
-    def Execute(self, args):
-        installDir = Registry.CurrentUser.OpenSubKey(r"Software").OpenSubKey("GitExtensions").OpenSubKey("GitExtensions").OpenSubKey("1.0.0.0").GetValue("InstallDir")
-        path = UserContext.GetExplorerPath(True)
-        info = ProcessStartInfo(Path.Combine(installDir, "gitextensions.exe"), "browse "+path)
-        Process.Start(info)
+def OpenWithGitExtensions(args):
+    installDir = Registry.CurrentUser.OpenSubKey(r"Software").OpenSubKey("GitExtensions").OpenSubKey("GitExtensions").OpenSubKey("1.0.0.0").GetValue("InstallDir")
+    path = UserContext.GetExplorerPath(True)
+    info = ProcessStartInfo(Path.Combine(installDir, "gitextensions.exe"), "browse "+path)
+    Process.Start(info)
 
 
-class OpenWithReflector(BaseIronPythonCommand):
-    def Execute(self, args):
-        for path in UserContext.GetExplorerSelectedItems(True):
-            Debug.Write("edit "+path)
-            Process.Start("D:\documents\My Dropbox\Utils\reflector\reflector.exe", path)
+def OpenWithReflector(args):
+    for path in UserContext.GetExplorerSelectedItems(True):
+        Debug.Write("edit "+path)
+        Process.Start("D:\documents\My Dropbox\Utils\reflector\reflector.exe", path)
