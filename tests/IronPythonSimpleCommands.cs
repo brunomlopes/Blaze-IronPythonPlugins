@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Windows.Forms;
 using IronPython.Hosting;
 using IronPythonPlugins;
 using Microsoft.Scripting.Hosting;
@@ -18,7 +19,7 @@ namespace Tests
         public void Name_For_Class_With_No_GetName_Is_ClassName()
         {
             var commandFile = ForCode(@"class Command(BaseIronPythonCommand):
-  def Execute(self): return 1");
+  def Execute(self, args): return 1");
 
             Assert.Equal(1, commandFile.Count());
             Assert.Equal("Command", commandFile.First().Name);
@@ -30,7 +31,7 @@ namespace Tests
             var commandFile = new IronPythonCommandFile(_engine,
                                       @"class Command(BaseIronPythonCommand):
   def GetName(self): return ""Name""
-  def Execute(self): return 1");
+  def Execute(self, args): return 1");
 
             Assert.Equal(1, commandFile.Count());
             Assert.Equal("Name", commandFile.First().Name);
@@ -41,7 +42,7 @@ namespace Tests
         {
             var commandFile = new IronPythonCommandFile(_engine,
                                       @"class CommandName(BaseIronPythonCommand):
-  def Execute(self): return 1");
+  def Execute(self, args): return 1");
 
             Assert.Equal("Command Name", commandFile.First().Name);
         }
@@ -52,10 +53,32 @@ namespace Tests
             var commandFile = new IronPythonCommandFile(_engine,
                                       @"class CommandName(BaseIronPythonCommand):
   def GetName(self): return ""Name""
-  def Execute(self): return");
+  def Execute(self, args): return");
 
             var command = commandFile.First();
             Assert.Equal("Name",command.GetName(""));
+        } 
+        
+        [Fact]
+        public void Can_Create_Command_From_Method()
+        {
+            var commandFile = new IronPythonCommandFile(_engine,
+                                      @"def CommandName(args):
+  return ""result""");
+
+            Assert.True(commandFile.Any());
+            var command = commandFile.First();
+            Assert.Equal("Command Name",command.Name);
+        }
+        
+        [Fact]
+        public void Ignores_Methods_Starting_With_Underscore()
+        {
+            var commandFile = new IronPythonCommandFile(_engine,
+                                      @"def _CommandName(args):
+  return ""result""");
+
+            Assert.False(commandFile.Any());
         }
 
         public IronPythonCommandFile ForCode(string code)

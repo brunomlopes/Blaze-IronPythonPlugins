@@ -64,6 +64,10 @@ namespace IronPythonPlugins
                 .Where(kvp => kvp.Key != "BaseIronPythonCommand" && kvp.Key != "IIronPythonCommand");
 
 
+            var pluginMethods = scope.GetItems()
+                .Where(kvp => _engine.Operations.IsCallable(kvp.Value) && kvp.Value is PythonFunction)
+                .Where(kvp => !kvp.Key.StartsWith("_"));
+
             foreach (var nameAndClass in pluginClasses)
             {
                 var plugin = (IIronPythonCommand)_engine.Operations.Invoke(nameAndClass.Value, new object[] { });
@@ -77,6 +81,15 @@ namespace IronPythonPlugins
                 var command = new IronPythonPluginCommand(_pythonFile, plugin);
 
                 _localCommands.Add(command);
+            }
+
+            foreach (var pluginMethod in pluginMethods)
+            {
+                var commandName = CamelToSpaced(pluginMethod.Key);
+                var method = pluginMethod.Value;
+                var commandFromMethod = new IronPythonCommandFromMethod(commandName, arguments => _engine.Operations.Invoke(method, arguments).ToString());
+
+                _localCommands.Add(new IronPythonPluginCommand(_pythonFile, commandFromMethod));
             }
         }
 

@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="IIronPythonCommand.cs" />
     <Compile Include="IronPythonCommandFile.cs" />
+    <Compile Include="IronPythonCommandFromMethod.cs" />
     <Compile Include="IronPythonHostPlugin.cs" />
     <Compile Include="IronPythonPluginCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

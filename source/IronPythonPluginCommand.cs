@@ -5,7 +5,7 @@ using SystemCore.CommonTypes;
 
 namespace IronPythonPlugins
 {
-    class IronPythonPluginCommand : Command
+    public class IronPythonPluginCommand : Command
     {
         public IronPythonPluginCommand(FileInfo pythonFile, IIronPythonCommand plugin)
             : base(plugin.GetName(), "Python script " + plugin.GetName())

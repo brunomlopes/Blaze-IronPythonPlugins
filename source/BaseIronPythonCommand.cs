@@ -1,5 +1,4 @@
-﻿using System;
-using SystemCore.CommonTypes;
+﻿using SystemCore.CommonTypes;
 
 namespace IronPythonPlugins
 {
