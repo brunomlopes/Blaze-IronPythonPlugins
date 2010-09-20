@@ -21,4 +21,7 @@ class Putty(BaseIronPythonCommand):
 
     def Execute(self, args):
         Debug.Write("execute: "+args)
-        Process.Start("putty.exe", "-load "+ args)
+        if args.strip() == "":
+            Process.Start("putty.exe")
+        else:
+            Process.Start("putty.exe", "-load "+ args)
