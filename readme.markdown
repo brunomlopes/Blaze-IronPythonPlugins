@@ -24,18 +24,23 @@ Creating a plugin
 
 Just create a .ipy file in *plugins/IronPythonPlugins* like this:
 
-    class NewPlugin(BaseIronPythonCommand):
-        @property
-        def Name(self):
-            return "name for the plugin, used when calling it in blaze"
+    def NewPlugin(args):
+        pass
     
-        def Execute(self, args):
-            pass # args is what comes after the name when the user launches the plugin
+This creates a new plugin, with the name "New Plugin", that does nothing.
+A simple plugin that launches the command line would be:
+
+    def LaunchCommandLine(args):
+        return "cmd"
+
+A string returned from the plugin is interpreted as the command we want to execute, in this case, *cmd*.
+Notice that the name is camel cased, and is translated to the name "Launch Command Line".
+
 
 Examples
 --------
 
-Look into [Sample.ipy][2] for the simplest of plugins:
+Look into [Sample.ipy][2] a plugin created via a class:
 
     import System
     clr.AddReference("System.Windows.Forms")

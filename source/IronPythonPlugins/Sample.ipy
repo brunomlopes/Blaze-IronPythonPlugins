@@ -5,5 +5,5 @@ class MustScream(BaseIronPythonCommand):
 	def Execute(self, args):
 		System.Windows.Forms.MessageBox.Show(args, "Shout!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning)
 
-def MustScreamFunction(args):
-        System.Windows.Forms.MessageBox.Show(args, "Shout the function!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning)
+  def MustScreamFunction(args):
+    System.Windows.Forms.MessageBox.Show(args, "Shout the function!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning)
