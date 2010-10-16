@@ -71,11 +71,12 @@ namespace IronPythonPlugins
             foreach (var nameAndClass in pluginClasses)
             {
                 var plugin = (IIronPythonCommand)_engine.Operations.Invoke(nameAndClass.Value, new object[] { });
+                var commandName = CamelToSpaced(nameAndClass.Key);
+
                 if (plugin as BaseIronPythonCommand != null)
                 {
                     // retrieving the class name from the python time is a bit trickier without access to the engine
                     // so we pass this here
-                    var commandName = CamelToSpaced(nameAndClass.Key);
                     ((BaseIronPythonCommand) plugin).SetDefaultName(commandName);
                 }
                 var command = new IronPythonPluginCommand(_pythonFile, plugin);
@@ -89,7 +90,15 @@ namespace IronPythonPlugins
                 var method = pluginMethod.Value;
                 var commandFromMethod = new IronPythonCommandFromMethod(commandName, arguments => _engine.Operations.Invoke(method, arguments).ToString());
 
-                _localCommands.Add(new IronPythonPluginCommand(_pythonFile, commandFromMethod));
+                var description = _engine.Operations.GetDocumentation(pluginMethod.Value);
+                if (!string.IsNullOrEmpty(description))
+                {
+                    commandFromMethod.SetDescription(description);
+                }
+
+                var ironPythonPluginCommand = new IronPythonPluginCommand(_pythonFile, commandFromMethod);
+                
+                _localCommands.Add(ironPythonPluginCommand);
             }
         }
 

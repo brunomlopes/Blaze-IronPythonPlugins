@@ -8,7 +8,7 @@ namespace IronPythonPlugins
     public class IronPythonPluginCommand : Command
     {
         public IronPythonPluginCommand(FileInfo pythonFile, IIronPythonCommand plugin)
-            : base(plugin.GetName(), "Python script " + plugin.GetName())
+            : base(plugin.GetName(), plugin.GetDescription(string.Empty))
         {
             SetIsOwnerDelegate(plugin.IsOwner);
             SetNameDelegate(plugin.GetNameForParameters);

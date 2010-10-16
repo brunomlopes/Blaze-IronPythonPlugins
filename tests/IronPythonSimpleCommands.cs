@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Linq;
 using IronPython.Hosting;
 using IronPythonPlugins;
 using Microsoft.Scripting.Hosting;
@@ -13,8 +8,6 @@ namespace Tests
 {
     public class IronPythonSimpleCommands
     {
-        
-
         [Fact]
         public void Name_For_Class_With_No_GetName_Is_ClassName()
         {
@@ -79,6 +72,28 @@ namespace Tests
   return ""result""");
 
             Assert.False(commandFile.Any());
+        }
+        
+        [Fact]
+        public void DocString_Serves_As_Description_For()
+        {
+            var commandFile = new IronPythonCommandFile(_engine,
+                                      @"def CommandName(args):
+  """"""This is the description""""""
+  return ""result""");
+            Assert.Equal("This is the description", commandFile.First().GetDescription(string.Empty)); 
+            Assert.Equal("This is the description", commandFile.First().Description); 
+        }
+        
+        [Fact]
+        public void Default_Description_Is_The_Name()
+        {
+            var commandFile = new IronPythonCommandFile(_engine,
+                                      @"def CommandName(args):
+  return ""result""");
+            Assert.Equal("Command Name", commandFile.First().Description);
+            Assert.Equal("Command Name", commandFile.First().GetDescription(string.Empty)); 
+
         }
 
         public IronPythonCommandFile ForCode(string code)
