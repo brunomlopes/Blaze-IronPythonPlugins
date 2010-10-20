@@ -8,7 +8,7 @@ Properties {
     $package_dir = "$root_dir\package"
     $code_dir = "source"
     $solution = "$code_dir\IronPythonPlugins.sln"
-    $version = "1.2"
+    $version = "1.3"
     $configuration = "Debug"
     $blaze_portable = "lib\blaze"
     $blaze_version = "0.5.6.10"
@@ -115,5 +115,6 @@ Task CopyLocal -depends Build {
     }
     Copy-Item "source\bin\$configuration\*" -destination "D:\documents\My Dropbox\blaze\Plugins" -recurse
     Copy-Item "source\IronPythonPlugins\*" -destination "D:\documents\My Dropbox\blaze\Plugins\IronPythonPlugins"
+    Write-Host -ForegroundColor Cyan "    Starting blaze with new version of plugin" 
     Start-Process "D:\documents\My Dropbox\blaze\Blaze.exe" -WorkingDirectory "D:\documents\My Dropbox\blaze\"
 }

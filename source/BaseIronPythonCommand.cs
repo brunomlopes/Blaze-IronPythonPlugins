@@ -28,7 +28,9 @@ namespace IronPythonPlugins
 
         public virtual string AutoComplete(string parameters)
         {
-            return parameters;
+            if (GetName().ToLowerInvariant().StartsWith(parameters.ToLowerInvariant()))
+                return GetName();
+            return GetName() + " " + parameters;
         }
 
         public bool IsOwner(string str)

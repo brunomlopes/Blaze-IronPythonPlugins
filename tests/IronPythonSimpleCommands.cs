@@ -19,6 +19,18 @@ namespace Tests
         }
         
         [Fact]
+        public void Autocomplete_for_Command_Returns_Command_Name()
+        {
+            var commandFile = ForCode(@"class CommandName(BaseIronPythonCommand):
+  def Execute(self, args): return 1");
+
+            Assert.Equal(1, commandFile.Count());
+            var command = commandFile.First();
+            Assert.Equal(command.Name, command.GetAutoComplete("Com"));
+            Assert.Equal("Command Name", command.Name);
+        }
+        
+        [Fact]
         public void Name_For_Class_With_GetName_Is_Result_Of_GetName()
         {
             var commandFile = new IronPythonCommandFile(_engine,
