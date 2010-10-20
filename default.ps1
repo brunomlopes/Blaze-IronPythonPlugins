@@ -115,5 +115,6 @@ Task CopyLocal -depends Build {
     }
     Copy-Item "source\bin\$configuration\*" -destination "D:\documents\My Dropbox\blaze\Plugins" -recurse
     Copy-Item "source\IronPythonPlugins\*" -destination "D:\documents\My Dropbox\blaze\Plugins\IronPythonPlugins"
+    Write-Host -ForegroundColor Cyan "    Starting blaze with new version of plugin" 
     Start-Process "D:\documents\My Dropbox\blaze\Blaze.exe" -WorkingDirectory "D:\documents\My Dropbox\blaze\"
 }
