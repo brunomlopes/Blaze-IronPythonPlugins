@@ -8,7 +8,7 @@ Properties {
     $package_dir = "$root_dir\package"
     $code_dir = "source"
     $solution = "$code_dir\IronPythonPlugins.sln"
-    $version = "1.2"
+    $version = "1.3"
     $configuration = "Debug"
     $blaze_portable = "lib\blaze"
     $blaze_version = "0.5.6.10"
