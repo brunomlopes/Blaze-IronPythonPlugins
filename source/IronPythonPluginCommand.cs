@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using SystemCore.CommonTypes;
 
 namespace IronPythonPlugins
 {
     public class IronPythonPluginCommand : Command
     {
-        public IronPythonPluginCommand(FileInfo pythonFile, IIronPythonCommand plugin)
-            : base(plugin.GetName(), plugin.GetDescription(string.Empty))
+        public IronPythonPluginCommand(string fileFullName, IIronPythonCommand plugin, string defaultDescription)
+            : base(plugin.GetName(), GetDescriptionFromCommand(plugin, defaultDescription, string.Empty))
         {
+            var pythonFileFullName = fileFullName;
+
+
             SetIsOwnerDelegate(plugin.IsOwner);
             SetNameDelegate(plugin.GetNameForParameters);
             SetDescriptionDelegate(parameters =>
                                        {
-                                           var description = plugin.GetDescription(parameters);
-                                           return string.IsNullOrEmpty(description)
-                                                      ? pythonFile.FullName + ":" + plugin.GetName()
-                                                      : description;
+                                           return GetDescriptionFromCommand(plugin, defaultDescription, parameters);
                                        });
             SetIconDelegate(str => Resources.python_clear.ToBitmap());
             SetAutoCompleteDelegate(plugin.AutoComplete);
@@ -42,7 +41,7 @@ namespace IronPythonPlugins
                                        }
                                        catch (Exception e)
                                        {
-                                           Debug.Write(string.Format("Error executing {0}:{1}", pythonFile.FullName,
+                                           Debug.Write(string.Format("Error executing {0}:{1}", pythonFileFullName,
                                                                      e.Message));
                                            Debug.Write(e.StackTrace);
                                            if(e.InnerException != null)
@@ -52,6 +51,14 @@ namespace IronPythonPlugins
                                            SetDescriptionDelegate(s => string.Format("Error in past execution: {0}", e.Message));
                                        }
                                    });
+        }
+
+        private static string GetDescriptionFromCommand(IIronPythonCommand plugin, string defaultDescription, string parameters)
+        {
+            var currentDescription = plugin.GetDescription(parameters);
+            return string.IsNullOrEmpty(currentDescription)
+                       ? defaultDescription
+                       : currentDescription;
         }
     }
 }

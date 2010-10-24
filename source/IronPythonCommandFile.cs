@@ -16,15 +16,15 @@ namespace IronPythonPlugins
     public class IronPythonCommandFile : IEnumerable<Command>
     {
         private readonly ScriptEngine _engine;
-        private readonly FileInfo _pythonFile;
         private readonly List<Command> _localCommands;
+        private string _fileFullName;
 
         public IronPythonCommandFile(ScriptEngine engine, FileInfo pythonFile)
             : this(engine)
         {
-            _pythonFile = pythonFile;
+            _fileFullName = pythonFile.FullName;
 
-            var script = engine.CreateScriptSourceFromFile(pythonFile.FullName);
+            var script = engine.CreateScriptSourceFromFile(_fileFullName);
 
             FillCommandsFromScriptSource(script);
         }
@@ -32,6 +32,7 @@ namespace IronPythonPlugins
         public IronPythonCommandFile(ScriptEngine engine, string sourceCode)
             :this(engine)
         {
+            _fileFullName = "::string::";
             _engine = engine;
             var script = engine.CreateScriptSourceFromString(sourceCode, SourceCodeKind.File);
             FillCommandsFromScriptSource(script);
@@ -45,7 +46,16 @@ namespace IronPythonPlugins
 
         private void FillCommandsFromScriptSource(ScriptSource script)
         {
-            CompiledCode code = script.Compile();
+            CompiledCode code;
+            try
+            {
+                code = script.Compile();
+            }
+            catch (SyntaxErrorException e)
+            {
+                throw new SyntaxErrorExceptionPrettyWrapper(string.Format("Error compiling '{0}", _fileFullName), e);
+            }
+           
             ScriptScope scope = _engine.CreateScope();
 
             scope.SetVariable("IIronPythonCommand", ClrModule.GetPythonType(typeof(IIronPythonCommand)));
@@ -53,7 +63,14 @@ namespace IronPythonPlugins
             scope.SetVariable("UserContext", UserContext.Instance);
             scope.SetVariable("WindowUtility", WindowUtility.Instance);
             scope.SetVariable("clr", _engine.GetClrModule());
-            code.Execute(scope);
+            try
+            {
+                code.Execute(scope);
+            }
+            catch (UnboundNameException e)
+            {
+                throw new PythonException(string.Format("Error compiling '{0}'", _fileFullName), e);
+            }
 
 
             var pluginClasses = scope.GetItems()
@@ -73,13 +90,14 @@ namespace IronPythonPlugins
                 var plugin = (IIronPythonCommand)_engine.Operations.Invoke(nameAndClass.Value, new object[] { });
                 var commandName = CamelToSpaced(nameAndClass.Key);
 
+                var description = _engine.Operations.GetDocumentation(nameAndClass.Value);
                 if (plugin as BaseIronPythonCommand != null)
                 {
                     // retrieving the class name from the python time is a bit trickier without access to the engine
                     // so we pass this here
                     ((BaseIronPythonCommand) plugin).SetDefaultName(commandName);
                 }
-                var command = new IronPythonPluginCommand(_pythonFile, plugin);
+                var command = new IronPythonPluginCommand(_fileFullName, plugin, description);
 
                 _localCommands.Add(command);
             }
@@ -96,7 +114,7 @@ namespace IronPythonPlugins
                     commandFromMethod.SetDescription(description);
                 }
 
-                var ironPythonPluginCommand = new IronPythonPluginCommand(_pythonFile, commandFromMethod);
+                var ironPythonPluginCommand = new IronPythonPluginCommand(_fileFullName, commandFromMethod, description);
                 
                 _localCommands.Add(ironPythonPluginCommand);
             }
